@@ -1,0 +1,6 @@
+# Upstart script ubuntu
+# service with sudo start/stop/status <servicename>
+
+start on runlevel [2345]
+
+exec /opt/kafka/bin/zookeeper-server-start.sh /opt/kafka/config/zookeeper.properties

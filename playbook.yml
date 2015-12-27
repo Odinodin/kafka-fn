@@ -1,0 +1,33 @@
+---
+- hosts: all
+  become: True
+  tasks:
+    #- name: update apt cache
+    #  apt: update_cache=yes
+    #- name: install jdk
+    #  apt: name=openjdk-7-jdk state=present
+
+    # Retrieve Kafka
+    - name: Install kafka
+      get_url: url=http://apache.uib.no/kafka/0.8.1.1/kafka_2.9.2-0.8.1.1.tgz
+               dest=/opt/kafka_2.9.2-0.8.1.1.tgz
+               force=yes
+    - name: Unarchive kafka
+      unarchive: src=/opt/kafka_2.9.2-0.8.1.1.tgz
+                 dest=/opt
+                 copy=no
+
+    - name: Move kafka
+      command: creates=/opt/kafka mv /opt/kafka_2.9.2-0.8.1.1 /opt/kafka
+
+    - name: Configure zookeper as a service
+      action: template src=templates/init.d.zookeeper dest=/etc/init/zookeeper.conf
+
+    - name: Start Zookeeper service
+      action: service name=zookeeper state=started
+
+    - name: Configure kafka as a service
+      action: template src=templates/init.d.kafka dest=/etc/init/kafka.conf
+
+    - name: Start Kafka service
+      action: service name=kafka state=started
